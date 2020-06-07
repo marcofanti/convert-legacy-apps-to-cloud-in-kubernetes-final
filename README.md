@@ -1,5 +1,6 @@
 # Converting Legacy Applications to Cloud Native in Kubernetes
 
+Run "kubectl apply -k ./"
 
 http POST 192.168.99.125:30055/profile username=unamerkel password=changeme    firstName=Una lastName=Merkel email=unamerkel@example.com
 HTTP/1.1 200
