@@ -1,0 +1,18 @@
+# ----------------------------------------------------
+# apiVersion and kind of Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Adds namespace to all resources.
+namespace: liveproject
+
+# Labels to add to all resources and selectors.
+commonLabels:
+  someName: someValue
+  owner: marco
+  app: profile
+
+resources:
+  - secrets.yaml
+  - mysql-deployment.yaml
+  - profile-deployment.yaml

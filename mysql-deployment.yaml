@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: profile-mysql
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: profile
+    tier: mysql
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: profile-mysql
+spec:
+  selector:
+    matchLabels:
+      app: profile
+      tier: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: profile
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.6
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysqlroot
+              key: password
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysqluser
+              key: username
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysqluser
+              key: password
+        - name: MYSQL_DATABASE
+          value: "profiles"
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
